@@ -32,6 +32,7 @@ namespace :deploy do
       run_locally do
         with rails_env: fetch(:precompile_env) do
           execute "rm -rf", fetch(:assets_dir)
+          execute "rm -rf", fetch(:packs_dir)
         end
       end
     end
@@ -40,9 +41,10 @@ namespace :deploy do
     task :prepare do
       run_locally do
         with rails_env: fetch(:precompile_env) do
-          execute "npm rebuild"
+          execute "yarn install --force"
           execute "rake assets:clean"
           execute "rake assets:precompile"
+
           invoke "deploy:assets:sync"
         end
       end
@@ -52,13 +54,9 @@ namespace :deploy do
     task :sync do
       on roles(:all) do |server|
         run_locally do
-          #local_manifest_path = execute "ls #{fetch(:assets_dir)}/manifest*"
-          #local_manifest_path.strip!
-
           host = "deploy@#{server.hostname}"
           execute "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:assets_dir)}/"
           execute "#{fetch(:rsync_cmd)} ./#{fetch(:packs_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:packs_dir)}/"  #TODO: Check if exists
-          #execute "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{server}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
         end
       end
     end
