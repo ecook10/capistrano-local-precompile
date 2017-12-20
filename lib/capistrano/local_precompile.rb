@@ -49,13 +49,16 @@ namespace :deploy do
 
     desc "Performs rsync to app servers"
     task :sync do
-      run_locally do
-        #local_manifest_path = execute "ls #{fetch(:assets_dir)}/manifest*"
-        #local_manifest_path.strip!
+      on roles(:all) do |server|
+        run_locally do
+          #local_manifest_path = execute "ls #{fetch(:assets_dir)}/manifest*"
+          #local_manifest_path.strip!
 
-        execute "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{user}@#{server}:#{release_path}/#{fetch(:assets_dir)}/"
-        execute "#{fetch(:rsync_cmd)} ./#{fetch(:packs_dir)}/ #{user}@#{server}:#{release_path}/#{fetch(:packs_dir)}/"  #TODO: Check if exists      
-        #execute "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{server}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
+          host = "#{server.properties.name}@#{server.hostname}"
+          execute "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:assets_dir)}/"
+          execute "#{fetch(:rsync_cmd)} ./#{fetch(:packs_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:packs_dir)}/"  #TODO: Check if exists
+          #execute "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{server}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
+        end
       end
     end
   end
