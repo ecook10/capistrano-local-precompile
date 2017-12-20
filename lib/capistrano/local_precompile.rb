@@ -8,8 +8,9 @@ namespace :load do
     set :rsync_cmd,        "rsync -av --delete"
 
     after "bundler:install", "deploy:assets:prepare"
+    after "deploy:assets:prepare", "deploy:assets:sync"
     #before "deploy:assets:symlink", "deploy:assets:remove_manifest"
-    after "deploy:assets:prepare", "deploy:assets:cleanup"
+    after "deploy:assets:sync", "deploy:assets:cleanup"
   end
 end
 
@@ -41,7 +42,6 @@ namespace :deploy do
         with rails_env: fetch(:precompile_env) do
           execute "rake assets:clean"
           execute "rake assets:precompile"
-          execute "rake deploy:assets:sync"
         end
       end
     end
