@@ -4,7 +4,7 @@ namespace :load do
   task :defaults do
     set :precompile_env,   fetch(:rails_env) || 'production'
     set :assets_dir,       "public/assets"
-    set :packs_dir,        "public/packs"    
+    set :packs_dir,        "public/packs"
     set :rsync_cmd,        "rsync -av --delete"
 
     after "bundler:install", "deploy:assets:prepare"
@@ -41,12 +41,13 @@ namespace :deploy do
         with rails_env: fetch(:precompile_env) do
           execute "rake assets:clean"
           execute "rake assets:precompile"
+          execute "rake assets:sync"
         end
       end
     end
 
     desc "Performs rsync to app servers"
-    task :precompile do
+    task :sync do
       on roles(fetch(:assets_role)) do
 
         local_manifest_path = run_locally "ls #{assets_dir}/manifest*"
