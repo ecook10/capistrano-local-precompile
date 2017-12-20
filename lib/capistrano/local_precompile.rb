@@ -49,7 +49,7 @@ namespace :deploy do
 
     desc "Performs rsync to app servers"
     task :sync do
-      local_manifest_path = run_locally "ls #{assets_dir}/manifest*"
+      local_manifest_path = run_locally "ls #{fetch(:assets_dir)}/manifest*"
       local_manifest_path.strip!
 
       run_locally "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{user}@#{server}:#{release_path}/#{fetch(:assets_dir)}/"
