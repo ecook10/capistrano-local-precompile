@@ -35,17 +35,6 @@ namespace :deploy do
       end
     end
 
-    desc "Actually precompile the assets locally"
-    task :prepare do
-      run_locally do
-        with rails_env: fetch(:precompile_env) do
-          execute "rake assets:clean"
-          execute "rake assets:precompile"
-          execute "rake assets:sync"
-        end
-      end
-    end
-
     desc "Performs rsync to app servers"
     task :sync do
       on roles(fetch(:assets_role)) do
@@ -56,6 +45,17 @@ namespace :deploy do
         run_locally "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{user}@#{server}:#{release_path}/#{fetch(:assets_dir)}/"
         run_locally "#{fetch(:rsync_cmd)} ./#{fetch(:packs_dir)}/ #{user}@#{server}:#{release_path}/#{fetch(:packs_dir)}/"  #TODO: Check if exists      
         run_locally "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{server}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
+      end
+    end
+
+    desc "Actually precompile the assets locally"
+    task :prepare do
+      run_locally do
+        with rails_env: fetch(:precompile_env) do
+          execute "rake assets:clean"
+          execute "rake assets:precompile"
+          execute "rake assets:sync"
+        end
       end
     end
   end
