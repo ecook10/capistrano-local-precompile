@@ -40,6 +40,7 @@ namespace :deploy do
     task :prepare do
       run_locally do
         with rails_env: fetch(:precompile_env) do
+          execute "npm rebuild"
           execute "rake assets:clean"
           execute "rake assets:precompile"
           invoke "deploy:assets:sync"
@@ -53,7 +54,6 @@ namespace :deploy do
         run_locally do
           #local_manifest_path = execute "ls #{fetch(:assets_dir)}/manifest*"
           #local_manifest_path.strip!
-          execute "npm rebuild"
 
           host = "deploy@#{server.hostname}"
           execute "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:assets_dir)}/"
