@@ -54,8 +54,7 @@ namespace :deploy do
           #local_manifest_path = execute "ls #{fetch(:assets_dir)}/manifest*"
           #local_manifest_path.strip!
 
-          execute "echo #{server.netssh_options.to_s}"
-          host = "#{server.netssh_options[:user]}@#{server.hostname}"
+          host = "deploy@#{server.hostname}"
           execute "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:assets_dir)}/"
           execute "#{fetch(:rsync_cmd)} ./#{fetch(:packs_dir)}/ #{host}:#{fetch(:release_path)}/#{fetch(:packs_dir)}/"  #TODO: Check if exists
           #execute "#{fetch(:rsync_cmd)} ./#{local_manifest_path} #{user}@#{server}:#{release_path}/assets_manifest#{File.extname(local_manifest_path)}"
